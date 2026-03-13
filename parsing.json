@@ -1,0 +1,219 @@
+{
+  "name": "parsing",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        -16
+      ],
+      "id": "56fec71f-4c81-4100-83ff-8519954d8594",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c",
+          "mode": "list",
+          "cachedResultName": "use it",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "main",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -464,
+        -16
+      ],
+      "id": "d785caef-6020-45b1-88b0-32341dc9dab3",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "ad9e8d2b-6f8f-471e-b32d-1fd75d9020cd",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json.Designation }}",
+              "rightValue": "CEO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            },
+            {
+              "id": "b3f7ecb2-26f1-4252-8255-92292488d908",
+              "leftValue": "={{ $('Get row(s) in sheet').item.json.Department }}",
+              "rightValue": "=IT",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -80,
+        -16
+      ],
+      "id": "f1a0dd40-c2f7-4ac1-8954-c29f70154ee6",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  return {\n    json: {\n      name: item.json.Name,\n      email: item.json.Email,\n      status: item.json.Status\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -272,
+        -16
+      ],
+      "id": "e3c5b6a6-2bb7-4a2a-8bc2-34415956d778",
+      "name": "parse"
+    },
+    {
+      "parameters": {
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        144,
+        64
+      ],
+      "id": "f5732958-8a52-4621-9a17-342662dbe9ee",
+      "name": "Send a message",
+      "webhookId": "f2d97897-2e0b-4e8a-980d-f65ed77d5e6f",
+      "credentials": {
+        "slackApi": {
+          "id": "5dU1FMAjr2xMW2Pu",
+          "name": "Slack account 2"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09DMQ9SJA0",
+          "mode": "list",
+          "cachedResultName": "new-channel"
+        },
+        "text": "All the respectable members are requested to come for a casual discussion, sharp 6:00 pm",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        144,
+        -176
+      ],
+      "id": "4844bbb9-9867-46c1-8e44-bf38fe284f91",
+      "name": "Meeting call",
+      "webhookId": "f2d97897-2e0b-4e8a-980d-f65ed77d5e6f",
+      "credentials": {
+        "slackApi": {
+          "id": "5dU1FMAjr2xMW2Pu",
+          "name": "Slack account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "parse",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "parse": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Meeting call",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "0650d6bf-0284-41db-aa1f-11ab59a854e7",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4bc55106a3fc8351072dacd3189f86f6d66674cda4d4487154e99c4e9f820e8e"
+  },
+  "id": "VtDhTGkGhtdF8Ha6",
+  "tags": []
+}
