@@ -1,0 +1,1124 @@
+{
+  "name": "inventory management system",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -2256,
+        -1088
+      ],
+      "id": "47137f31-1543-4d8a-ac6e-b8e2c4fc3e9c",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        -1296
+      ],
+      "id": "ea089cee-ca79-4b29-91b2-8be6dbf3e469",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Current Stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2016,
+        -1376
+      ],
+      "id": "c83a4c01-3f98-407b-a590-52db979b6174",
+      "name": "Read current stock",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b0cf61b6-552a-46c3-9610-4800a4737de1",
+              "leftValue": "={{ Number($json[\"Quantity\"]) === 0 ? \"0\" : \"1\" }}",
+              "rightValue": "0",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1776,
+        -1376
+      ],
+      "id": "be5c7649-5a5d-4a96-ba99-0eb928e99197",
+      "name": "Filter all items that have zero quantity"
+    },
+    {
+      "parameters": {
+        "jsCode": "return items.map(item => {\n  return {\n    json: {\n      ...item.json,\n      Quantity: item.Quanity ? item.Quanity : 0,\n      timestamp: new Date().toLocaleString()\n    }\n  };\n});\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1504,
+        -1488
+      ],
+      "id": "43b1f66a-fb83-4fcb-a5d8-4c5e7e8f6f81",
+      "name": "Append Time Stamp to each item that is zero"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 209930692,
+          "mode": "list",
+          "cachedResultName": "dead stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=209930692"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item name": "={{ $json['Item name'] }}",
+            "Quantity": "={{ $json.Quantity }}",
+            "BarCode": "={{ $json.BarCode }}",
+            "timestamp": "={{ $json.timestamp }}"
+          },
+          "matchingColumns": [
+            "Item Name"
+          ],
+          "schema": [
+            {
+              "id": "Item name",
+              "displayName": "Item name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "BarCode",
+              "displayName": "BarCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "RAW"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1296,
+        -1488
+      ],
+      "id": "86cc1d01-9016-48c7-8bc1-bc4b1f5d3c6c",
+      "name": "Add Dead Stock to sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Current Stock",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=0"
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2000,
+        -1168
+      ],
+      "id": "e372fbe8-90fd-4f32-a942-afc7a7868dc9",
+      "name": "Read current stock1",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09EN248R6Z",
+          "mode": "list",
+          "cachedResultName": "n8n-errors"
+        },
+        "text": "={{ $json.timestamp }}\n{{ $json['Item name'] }}\n{{ $json.Quantity }}\n{{ $json.BarCode }}",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -1040,
+        -1568
+      ],
+      "id": "9ff2cc97-de54-4d0d-a9e1-26dede597c71",
+      "name": "Dead Stock Msg",
+      "webhookId": "c227ce27-f1eb-4707-a2f6-47d06a21ab28",
+      "credentials": {
+        "slackApi": {
+          "id": "5dU1FMAjr2xMW2Pu",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -2240,
+        -1376
+      ],
+      "id": "05bc2a43-7007-4731-9eb2-0775466f5002",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1677620138,
+          "mode": "list",
+          "cachedResultName": "Already restocked Shipments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=1677620138"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item name": "={{ $json['Item name'] }}",
+            "Quantity": "={{ $json.Quantity }}",
+            "BarCode": "={{ $json.BarCode }}",
+            "Shipment Tracking": "={{ $json['Shipment Tracking'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Item name",
+              "displayName": "Item name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "BarCode",
+              "displayName": "BarCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Shipment Tracking",
+              "displayName": "Shipment Tracking",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1488,
+        -1088
+      ],
+      "id": "bcee14ea-e09f-46ec-9203-583585d7b1ed",
+      "name": "Restocking Log update",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Generate a UUID (v4-style)\nfunction generateUUID() {\n  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {\n    const r = Math.random() * 16 | 0;\n    const v = c === 'x' ? r : (r & 0x3 | 0x8);\n    return v.toString(16);\n  });\n}\n\n// Input data (use input from previous node in production)\nconst items = [\n  { \"BarCode\": 2736265 },\n  { \"Item name\": \"Chicken Bread\", \"Quantity\": 168, \"BarCode\": 5594262 },\n  { \"Item name\": \"Rice(kg)\", \"Quantity\": 240, \"BarCode\": 1691947 },\n  { \"Item name\": \"Pasta\", \"Quantity\": 0, \"BarCode\": 9281228 },\n  { \"Item name\": \"Cereal\", \"Quantity\": 224, \"BarCode\": 7797685 }\n];\n\n// Use existing shipment ID if passed from previous node\nlet shipmentId = $json[\"shipmentId\"];\nif (!shipmentId) {\n  shipmentId = generateUUID();\n}\n\n// Get current Date and Time\nconst now = new Date();\nconst dateStr = now.toISOString().slice(0, 10); // YYYY-MM-DD\nconst timeStr = now.toTimeString().slice(0, 8); // HH:MM:SS\n\n// Build output items\nconst output = items.map(item => {\n  return {\n    json: {\n      \"Shipment ID\": shipmentId,\n      \"Item name\": item[\"Item name\"] ?? \"\",\n      \"Quantity\": item[\"Quantity\"] ?? 0,\n      \"BarCode\": item[\"BarCode\"] ?? \"\",\n      \"Date\": dateStr,\n      \"Time\": timeStr\n    }\n  };\n});\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1264,
+        -1088
+      ],
+      "id": "6590fcc5-03bc-477f-9d1c-bba24a94a7fd",
+      "name": "Updating with Shipment ID"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 16415231,
+          "mode": "list",
+          "cachedResultName": "Restocking Logs",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=16415231"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Quantity": "={{ $json.Quantity }}",
+            "Barcode": "={{ $json.BarCode }}",
+            "ShipmentID": "={{ $json['Shipment ID'] }}",
+            "ItemName": "={{ $json['Item name'] }}",
+            "Date": "={{ $json.Date }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "ItemName",
+              "displayName": "ItemName",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Barcode",
+              "displayName": "Barcode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "ShipmentID",
+              "displayName": "ShipmentID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {
+          "cellFormat": "USER_ENTERED"
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1040,
+        -1152
+      ],
+      "id": "58b5047b-ded4-4749-9c84-aa3beaf85c4b",
+      "name": "Update Restocking Log",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1893050196,
+          "mode": "list",
+          "cachedResultName": "Orders Shipments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=1893050196"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item name": "={{ $json.ItemName }}",
+            "Quantity": "={{ $json.quantityToOrder }}",
+            "BarCode": "={{ $json.BarCode }}",
+            "Shipment Tracking": "={{ $json.shipmentTracking }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Item name",
+              "displayName": "Item name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "BarCode",
+              "displayName": "BarCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Shipment Tracking",
+              "displayName": "Shipment Tracking",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -752,
+        -1504
+      ],
+      "id": "31bb9642-fdcf-4b70-aa18-9da084274460",
+      "name": "Place Order",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1677620138,
+          "mode": "list",
+          "cachedResultName": "Already restocked Shipments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=1677620138"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item name": "={{ $json.ItemName }}",
+            "Quantity": "={{ $json.quantityToOrder }}",
+            "BarCode": "={{ $json.BarCode }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "Shipment Tracking": "={{ $json.shipmentTracking }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Item name",
+              "displayName": "Item name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "BarCode",
+              "displayName": "BarCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Shipment Tracking",
+              "displayName": "Shipment Tracking",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -752,
+        -1296
+      ],
+      "id": "e9d918fb-382e-420f-beba-2c035c6645f9",
+      "name": "Already Restocked Shipments",
+      "executeOnce": false,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1893050196,
+          "mode": "list",
+          "cachedResultName": "Orders Shipments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=1893050196"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Item name": "={{ $json['Item name'] }}",
+            "Quantity": "={{ $json.Quantity }}",
+            "BarCode": "={{ $json.BarCode }}",
+            "Shipment Tracking": "={{ $json['Shipment ID'] }}"
+          },
+          "matchingColumns": [
+            "Shipment Tracking"
+          ],
+          "schema": [
+            {
+              "id": "Item name",
+              "displayName": "Item name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "BarCode",
+              "displayName": "BarCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Shipment Tracking",
+              "displayName": "Shipment Tracking",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1024,
+        -896
+      ],
+      "id": "69c44d55-f30b-49c5-8858-55596a4d51b8",
+      "name": "Update Order Shipments",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Example: Already processed shipment IDs\nconst alreadyRestockedShipments = [\n  \"TRACK12345\",\n  \"SHIP56789\",\n  \"XYZ999\"\n];\n\nconst orderList = [];\nconst restockedList = [];\n\nfunction generateShipmentID() {\n  // Generate a unique shipment ID (e.g., based on time)\n  const now = new Date();\n  const random = Math.floor(Math.random() * 1000);\n  return `SHIP-${now.getFullYear()}${(now.getMonth()+1)}${now.getDate()}-${random}`;\n}\n\nfor (const item of items) {\n  const data = item.json;\n\n  // Normalize fields (support different casing or naming)\n  const itemName = data[\"Item name\"] || data[\"ItemName\"] || data.ItemName || \"Unknown Item\";\n  const barcode = data.BarCode || data.Barcode || data[\"Barcode\"] || \"Unknown Barcode\";\n  const quantity = parseInt(data.Quantity || data[\"quantity\"] || 0, 10);\n  const timestamp = data.timestamp || data.Date || new Date().toISOString();\n\n  const shipmentId =\n    data[\"Shipment Tracking\"] ||\n    data[\"Shipment ID\"] ||\n    data[\"Tracking ID\"] ||\n    data[\"ShipmentID\"] ||\n    \"Unknown\";\n\n  if (quantity === 0) {\n    // Dead stock – generate a new shipment ID for the new order\n    const newShipmentId = generateShipmentID();\n\n    orderList.push({\n      ItemName: itemName,\n      BarCode: barcode,\n      quantityToOrder: 10,\n      shipmentTracking: newShipmentId,\n      timestamp: new Date().toISOString()\n    });\n  } else {\n    // Check if shipment has already been logged\n    if (!alreadyRestockedShipments.includes(shipmentId)) {\n      restockedList.push({\n        ItemName: itemName,\n        BarCode: barcode,\n        quantityInStock: quantity,\n        shipmentId: shipmentId,\n        timestamp: timestamp\n      });\n    }\n  }\n}\n\n// Final output array\nconst output = [];\n\n// Orders (new orders due to dead stock)\nfor (const order of orderList) {\n  output.push({\n    json: {\n      type: \"order\",\n      ...order\n    }\n  });\n}\n\n// Restocked items (new ones only)\nfor (const restocked of restockedList) {\n  output.push({\n    json: {\n      type: \"restocked\",\n      ...restocked\n    }\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1040,
+        -1360
+      ],
+      "id": "a495a277-4279-42fc-a590-1c930692cb92",
+      "name": "Compute Order For Dead Inventory also generate new shipment ID"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1893050196,
+          "mode": "list",
+          "cachedResultName": "Orders Shipments",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=1893050196"
+        },
+        "combineFilters": "OR",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -2000,
+        -912
+      ],
+      "id": "76b0ec16-0a8e-49c9-8add-d3b89e2bdc91",
+      "name": "Ordered Shipment",
+      "executeOnce": true,
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        -1712,
+        -1088
+      ],
+      "id": "406b4a6b-2610-43b8-85be-a30e43247cb7",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Get all inputs from previous nodes\nconst inputs = $input.all();\n\n// Ensure both inputs are present\nif (inputs.length < 2) {\n  throw new Error(\"Both Ordered Shipment and Current Stock nodes must be connected to this Code node.\");\n}\n\n// Extract JSON arrays from both sheets\nconst orderedItems = inputs[0].json.items || [inputs[0].json];\nconst stockItems = inputs[1].json.items || [inputs[1].json];\n\n// Debugging\nconsole.log(`Ordered Items: ${orderedItems.length}`);\nconsole.log(`Stock Items: ${stockItems.length}`);\n\n// Helper to generate shipment IDs\nfunction generateShipmentID() {\n  const now = new Date();\n  const rand = Math.floor(Math.random() * 1000);\n  return `SHIP-${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}-${rand}`;\n}\n\n// Create a map using barcode as key\nconst mergedMap = new Map();\n\n// Insert ordered items into the map\nfor (const item of orderedItems) {\n  const barcode = String(item.BarCode || item.Barcode || '').trim();\n  if (!barcode) continue;\n\n  mergedMap.set(barcode, {\n    ...item,\n    BarCode: barcode,\n    Quantity: parseInt(item.Quantity || 0),\n    \"Shipment Tracking\": item[\"Shipment Tracking\"] || '',\n  });\n}\n\n// Merge current stock items\nfor (const stockItem of stockItems) {\n  const barcode = String(stockItem.BarCode || stockItem.Barcode || '').trim();\n  console.log(\"BARCODE\", barcode)\n  if (!barcode) continue;\n\n  const quantity = parseInt(stockItem.Quantity || 0);\n  const itemName = stockItem[\"Item name\"] || stockItem.ItemName || \"\";\n\n  console.log(\"MergedMap\", mergedMap)\n  if (mergedMap.has(barcode)) {\n    const existing = mergedMap.get(barcode);\n\n    // Update quantity\n    existing.Quantity = quantity;\n\n    // Generate Shipment Tracking if quantity > 0 OR tracking is missing/empty\n    if (quantity > 0 || !existing[\"Shipment Tracking\"]?.trim()) {\n      const newID = generateShipmentID();\n      \n      console.log(`Generated Shipment ID ${newID} for barcode ${barcode}`);\n      existing[\"Shipment Tracking\"] = newID;\n    }\n    mergedMap.set(barcode, existing);\n  } else {\n    // New item from stock — add it\n    const newTrackingID = generateShipmentID()\n    mergedMap.set(barcode, {\n      \"Item name\": itemName,\n      BarCode: barcode,\n      Quantity: quantity,\n      \"Shipment Tracking\": newTrackingID,\n    });\n  }\n}\n\n// Prepare final merged output\nconst mergedArray = Array.from(mergedMap.values()).map((item, index) => ({\n  ...item,\n  row_number: index + 1\n}));\n\nconsole.log(`Merged Total Items: ${mergedArray.length}`);\nconsole.log(\"Final Merged Items:\", mergedArray);\n\nreturn mergedArray.map(item => ({ json: item }));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -2656,
+        -1168
+      ],
+      "id": "7a4edbb4-b719-4f2d-9524-5e35a71a1ccd",
+      "name": "Merge Current and Already restock shipments"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.removeDuplicates",
+      "typeVersion": 2,
+      "position": [
+        -736,
+        -928
+      ],
+      "id": "073484f4-1a14-4c77-93bb-2cb7ab86c0c6",
+      "name": "Remove Duplicates"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ",
+          "mode": "list",
+          "cachedResultName": "Inventory",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 564933660,
+          "mode": "list",
+          "cachedResultName": "pure",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1sBUYc_Ljs8XToC6PHBcFDdkCKoiqN4aJ-U73LgeTxHQ/edit#gid=564933660"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Item name",
+              "displayName": "Item name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Quantity",
+              "displayName": "Quantity",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "BarCode",
+              "displayName": "BarCode",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Shipment Tracking",
+              "displayName": "Shipment Tracking",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -528,
+        -928
+      ],
+      "id": "f739bdad-b69c-46c6-9077-4a287a26e1d2",
+      "name": "Append or update row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Ordered Shipment",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Read current stock1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read current stock": {
+      "main": [
+        [
+          {
+            "node": "Filter all items that have zero quantity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter all items that have zero quantity": {
+      "main": [
+        [
+          {
+            "node": "Append Time Stamp to each item that is zero",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append Time Stamp to each item that is zero": {
+      "main": [
+        [
+          {
+            "node": "Add Dead Stock to sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Add Dead Stock to sheet": {
+      "main": [
+        [
+          {
+            "node": "Dead Stock Msg",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Compute Order For Dead Inventory also generate new shipment ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read current stock1": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Dead Stock Msg": {
+      "main": [
+        []
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read current stock",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Restocking Log update": {
+      "main": [
+        [
+          {
+            "node": "Updating with Shipment ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Updating with Shipment ID": {
+      "main": [
+        [
+          {
+            "node": "Update Order Shipments",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update Restocking Log",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Order For Dead Inventory also generate new shipment ID": {
+      "main": [
+        [
+          {
+            "node": "Place Order",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Already Restocked Shipments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ordered Shipment": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Restocking Log update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Order Shipments": {
+      "main": [
+        [
+          {
+            "node": "Remove Duplicates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Remove Duplicates": {
+      "main": [
+        [
+          {
+            "node": "Append or update row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9748c8f5-1847-4948-8db6-5cd9f277952c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4bc55106a3fc8351072dacd3189f86f6d66674cda4d4487154e99c4e9f820e8e"
+  },
+  "id": "yvP32MgbgVvcHshF",
+  "tags": []
+}
