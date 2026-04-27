@@ -1,0 +1,754 @@
+{
+  "name": "Department sorting",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": false,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "c45a3991-3b82-4e70-ac17-57ef85fd7a0b",
+              "leftValue": "={{ $json['Name'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "50ba6b17-3478-433a-bb29-d964a5b3fa6c",
+              "leftValue": "={{ $json.Department }}",
+              "rightValue": "=",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            },
+            {
+              "id": "0d14c4d7-fb32-4955-a2c5-11cb35df3f80",
+              "leftValue": "={{ $json.Designation }}",
+              "rightValue": "CEO",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {
+          "ignoreCase": true
+        }
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1424,
+        240
+      ],
+      "id": "dfee6cd4-9ad2-4e92-b714-c0ff9ab7af09",
+      "name": "If"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1760,
+        240
+      ],
+      "id": "443d8413-f3a9-4090-ba0d-a824682bd227",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        -1248,
+        368
+      ],
+      "id": "3db0e116-0423-4324-a3d8-f4b0009c2eb8",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c",
+          "mode": "list",
+          "cachedResultName": "use it",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "main",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1584,
+        240
+      ],
+      "id": "6ccf0c50-b1fb-48a4-b977-b0b10eb0ba65",
+      "name": "Main sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c",
+          "mode": "list",
+          "cachedResultName": "use it",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1563135014,
+          "mode": "list",
+          "cachedResultName": "Department_Count",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit#gid=1563135014"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "department": "={{ $json.department }}",
+            "newPeopleCount": "={{ $json.newPeopleCount }}",
+            "newPeople": "={{ $json.newPeople }}",
+            "timestamp": "={{ $json.timestamp }}",
+            "date": "={{ $json.date }}",
+            "departmentCEO": "={{ $json.departmentCEO }}"
+          },
+          "matchingColumns": [
+            "departmentCEO"
+          ],
+          "schema": [
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "newPeopleCount",
+              "displayName": "newPeopleCount",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "departmentCEO",
+              "displayName": "departmentCEO",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "newPeople",
+              "displayName": "newPeople",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "timestamp",
+              "displayName": "timestamp",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -1040,
+        112
+      ],
+      "id": "a2cd16ff-76a3-466f-9caa-2eefc8112b91",
+      "name": "Department Count",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09MLQ0PKCP",
+          "mode": "list",
+          "cachedResultName": "welcome-new-hires"
+        },
+        "text": "=Welcome Message From CEO \nDear, \n{{ $json.name }}\n\n{{ $json.welcomeNote }}\nIt's your new beginning.\n{{ $json.date }}\nLet's Rock Together.\n\n",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -672,
+        -112
+      ],
+      "id": "d48c7227-cedd-4a04-acff-f89e47fa5a5b",
+      "name": "Welcome Note",
+      "webhookId": "7d135f7e-e3e8-4367-88bc-39a6c1b2c3e6",
+      "credentials": {
+        "slackApi": {
+          "id": "5dU1FMAjr2xMW2Pu",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\n// Structures\nconst departmentMap = {};      // department -> Set of people\nconst departmentCEOs = {};     // department -> CEO name\n\n// Get current date and time\nconst now = new Date();\nconst isoTimestamp = now.toISOString();\nconst readableDate = isoTimestamp.split(\"T\")[0];\n\n// Helper: Add name to department’s list\nfunction addToDepartment(dept, name) {\n  if (!name || typeof name !== 'string') return;\n\n  const cleanDept = dept.trim().toLowerCase(); // normalize key\n  const cleanName = name.trim();\n\n  if (!departmentMap[cleanDept]) {\n    departmentMap[cleanDept] = new Set();\n  }\n\n  departmentMap[cleanDept].add(cleanName);\n}\n\n// Process each item\nfor (const item of items) {\n  const data = item.json;\n  const department = data[\"Department\"] || \"Unknown\";\n  const departmentKey = department.trim().toLowerCase();\n\n  // Track department CEO (first occurrence)\n  const ceoName = data[\"Department CEO Name\"];\n  if (ceoName && !departmentCEOs[departmentKey]) {\n    departmentCEOs[departmentKey] = ceoName.trim();\n  }\n\n  // Add company name\n  const companyName = data[\"Company Name\"] || data[\"Company\"] || data[\"Name\"];\n  if (companyName) {\n    addToDepartment(department, companyName);\n  }\n\n  // Extract people names\n  const possibleNames = [\n    data[\"CEO\"],\n    data[\"CO Founder\"],\n    data[\"Co-Founder\"],\n    data[\"Founder\"],\n    data[\"Contact Person\"],\n    data[\"Primary Contact\"],\n    data[\"email\"]\n  ];\n\n  for (const name of possibleNames) {\n    if (name && typeof name === 'string' && name.trim() !== '') {\n      const cleaned = name.includes('@') ? name.split('@')[0] : name;\n      addToDepartment(department, cleaned);\n    }\n  }\n}\n\n// Build output\nconst output = [];\n\nfor (const [deptKey, peopleSet] of Object.entries(departmentMap)) {\n  const peopleList = Array.from(peopleSet);\n  const ceoName = departmentCEOs[deptKey] || \"N/A\";\n\n  output.push({\n    json: {\n      department: deptKey,\n      newPeopleCount: peopleList.length,\n      newPeople: peopleList.join(\", \"),\n      departmentCEO: ceoName,\n      timestamp: isoTimestamp,\n      date: readableDate\n    }\n  });\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -1264,
+        16
+      ],
+      "id": "79709512-6bf9-4352-b09d-0b31cb80dae4",
+      "name": "Count & Designation Segregation"
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09DMQ9SJA0",
+          "mode": "list",
+          "cachedResultName": "new-channel"
+        },
+        "text": "=📢 *New Team Update Alert*\n\nWelcome To The New World!!\n\n*🏢 Department:* `{{ $json.department }}`\n*🏢 Department CEO:* {{ $json.departmentCEO }}\n*👥 New People Added:* `{{ $json.newPeopleCount }}`\n\n*🆕 Members:*\n{{ $json.newPeople }}\n\n📅 *Date:* `{{ $json.date }}`\n⏰ *Time:* `{{ $json.timestamp }}`\n\n✅ _Update successfully processed._\n\n\n",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -1040,
+        -160
+      ],
+      "id": "9985f845-ea9b-4120-99d5-bd734416b79c",
+      "name": "New Member Alert to Respective Departments",
+      "webhookId": "8b0f8895-9b5f-453f-888c-b4fa3eea9269",
+      "credentials": {
+        "slackApi": {
+          "id": "5dU1FMAjr2xMW2Pu",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🧠 Works for both single-input and multi-input Code nodes\n\n// Use `items` when only one input is connected, or `$input.all()` when multiple are\nlet input;\n\ntry {\n  input = $input.all(); // For multi-input nodes\n  if (!input || !Array.isArray(input) || input.length === 0) {\n    input = items; // Fallback to normal single input\n  }\n} catch (error) {\n  input = items; // If $input is undefined, fallback safely\n}\n\nconst output = [];\n\nfor (const item of input) {\n  const data = item.json || {};\n\n  const department = data.department || \"Unknown\";\n  const peopleString = data.newPeople || \"\";\n  const people = peopleString\n    .split(\",\")\n    .map(p => p.trim())\n    .filter(Boolean);\n\n  const date = data.date || new Date().toISOString().split(\"T\")[0];\n\n  for (const person of people) {\n    output.push({\n      json: {\n        name: person,\n        department: department,\n        date: date,\n        welcomeNote: `Welcome to the ${department.charAt(0).toUpperCase() + department.slice(1)} team, ${person}! 🎉`\n      }\n    });\n  }\n}\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        112
+      ],
+      "id": "1d151993-5957-47cb-ac52-b562c2062a22",
+      "name": "Welcome Hires"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c",
+          "mode": "list",
+          "cachedResultName": "use it",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2062700463,
+          "mode": "list",
+          "cachedResultName": "Welcome Note",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit#gid=2062700463"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "name": "={{ $json.name }}",
+            "department": "={{ $json.department }}",
+            "date": "={{ $json.date }}",
+            "welcomeNote": "={{ $json.welcomeNote }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "welcomeNote",
+              "displayName": "welcomeNote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -656,
+        240
+      ],
+      "id": "f9b68f90-b676-4736-9eae-f172e46bfe51",
+      "name": "Welcome Note Sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "calendar",
+        "calendar": {
+          "__rl": true,
+          "value": "ainoalisps@gmail.com",
+          "mode": "list",
+          "cachedResultName": "ainoalisps@gmail.com"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendar",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        32
+      ],
+      "id": "1ec5d79e-7caa-4997-87ba-1523dd75c569",
+      "name": "Get availability in a calendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "li5vQVOD67mW9jGi",
+          "name": "Google Calendar account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "select": "channel",
+        "channelId": {
+          "__rl": true,
+          "value": "C09D37ZEC3Z",
+          "mode": "list",
+          "cachedResultName": "all-aainoali"
+        },
+        "text": "=Meeting Alert with CEO\n{{ $json.name }}\n{{ $json.department }}\n{{ $json.email }}\n",
+        "otherOptions": {}
+      },
+      "type": "n8n-nodes-base.slack",
+      "typeVersion": 2.3,
+      "position": [
+        -256,
+        32
+      ],
+      "id": "e9e6cd32-29a8-47ae-b598-6d575a346009",
+      "name": "Meeting Alert",
+      "webhookId": "c0110557-a7ab-4ff8-bee1-beeb54a28f3a",
+      "credentials": {
+        "slackApi": {
+          "id": "5dU1FMAjr2xMW2Pu",
+          "name": "Slack account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 🧠 Purpose:\n// Mark meetings as done if their date <= today\n// Remove completed from \"active\" list\n// Sort remaining by date and department\n// Output all meetings as flat records (no empty fields)\n\nconst today = new Date().toISOString().split('T')[0];\nconst completed = [];\nconst remaining = [];\n\n// Separate completed vs remaining\nfor (const item of items) {\n  const data = { ...item.json };\n  const meetingDate = new Date(data.date);\n\n  // Ensure all required fields exist\n  data.email = data.email || '';\n  data.name = data.name || '';\n  data.department = data.department || '';\n  data.date = data.date || '';\n  data.subject = data.subject || '';\n  data.status = data.status || '';\n\n  if (meetingDate <= new Date(today)) {\n    data.status = 'done';\n    completed.push(data);\n  } else {\n    data.status = 'pending';\n    remaining.push(data);\n  }\n}\n\n// Sort remaining (future) meetings\nremaining.sort((a, b) => {\n  const dateA = new Date(a.date);\n  const dateB = new Date(b.date);\n\n  if (dateA.getTime() === dateB.getTime()) {\n    return a.department.localeCompare(b.department);\n  }\n  return dateA - dateB;\n});\n\n// ✅ Combine both so no empty or undefined outputs\nconst allMeetings = [\n  ...completed.map((m) => ({\n    json: {\n      message: '✅ Completed meetings (marked as done)',\n      name: m.name,\n      email: m.email,\n      department: m.department,\n      date: m.date,\n      subject: m.subject,\n      status: m.status,\n    },\n  })),\n  ...remaining.map((m) => ({\n    json: {\n      message: '✅ Remaining meetings (sorted)',\n      name: m.name,\n      email: m.email,\n      department: m.department,\n      date: m.date,\n      subject: m.subject,\n      status: m.status,\n    },\n  })),\n];\n\n// Output all meetings as separate n8n items\nreturn allMeetings;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        384
+      ],
+      "id": "a746f028-3e36-4528-86c1-a4ccd83e730d",
+      "name": "Meeting Status"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Helper to generate dummy email\nfunction generateEmail(name, department) {\n  if (!name) name = \"unknown\";\n  if (!department) department = \"unknown\";\n  const cleanName = name.toLowerCase().replace(/[^a-z0-9]+/g, '.');\n  const cleanDept = department.toLowerCase().replace(/[^a-z0-9]+/g, '');\n  return `${cleanName}@${cleanDept}.example.com`;\n}\n\n// Ensure items exist\nconst inputItems = items || [];\n\nif (inputItems.length === 0) {\n  return []; // nothing to process\n}\n\n// Group by department\nconst grouped = {};\nfor (const item of inputItems) {\n  const data = item.json || {};\n  const dept = data.department || \"unknown\";\n  if (!grouped[dept]) grouped[dept] = [];\n  grouped[dept].push(data);\n}\n\n// Pick one random person per department\nconst selected = [];\nfor (const dept in grouped) {\n  const people = grouped[dept];\n  if (people.length === 0) continue;\n  const chosen = people[Math.floor(Math.random() * people.length)];\n  chosen.email = generateEmail(chosen.name, chosen.department);\n  selected.push(chosen);\n}\n\n// OPTIONAL: If you only want 5 people total, uncomment below\n// selected.length = 5;\n\n// Prepare output\nconst output = selected.map(person => ({\n  json: {\n    name: person.name || \"Unknown\",\n    department: person.department || \"Unknown\",\n    date: person.date || new Date().toISOString().split(\"T\")[0],\n    email: person.email,\n    welcomeNote: person.welcomeNote || `Welcome to the ${person.department || \"team\"}, ${person.name || \"there\"}! 🎉`,\n    subject: `Meeting Invite - ${person.department ? person.department.toUpperCase() : \"UNKNOWN\"}`,\n    message: `${person.welcomeNote || \"\"}\\n\\nLet's schedule a short meeting to connect and align.`\n  }\n}));\n\nreturn output;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -448,
+        240
+      ],
+      "id": "1dd89c80-2e36-4b1a-bbbd-d0ef8b8beacc",
+      "name": "Random Email1"
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c",
+          "mode": "list",
+          "cachedResultName": "use it",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2062700463,
+          "mode": "list",
+          "cachedResultName": "Welcome Note",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1DGDiIGDf-E6-_5uJDZpQ-A0obqeocoCl9qXqpwjw22c/edit#gid=2062700463"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "email": "={{ $json.email }}",
+            "name": "={{ $json.name }}",
+            "date": "={{ $json.date }}",
+            "department": "={{ $json.department }}",
+            "subject": "={{ $json.subject }}"
+          },
+          "matchingColumns": [
+            "email"
+          ],
+          "schema": [
+            {
+              "id": "name",
+              "displayName": "name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "department",
+              "displayName": "department",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "date",
+              "displayName": "date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "welcomeNote",
+              "displayName": "welcomeNote",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "email",
+              "displayName": "email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "subject",
+              "displayName": "subject",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "message",
+              "displayName": "message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -256,
+        384
+      ],
+      "id": "ff3fcf23-27e2-41a7-b905-23df2c622abb",
+      "name": "Update",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "DrAnoNtHJlyEIyPQ",
+          "name": "Google Auth"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Append or update row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Count & Designation Segregation",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Main sheet",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Main sheet": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Department Count": {
+      "main": [
+        [
+          {
+            "node": "Welcome Hires",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Count & Designation Segregation": {
+      "main": [
+        [
+          {
+            "node": "Department Count",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "New Member Alert to Respective Departments",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Welcome Hires": {
+      "main": [
+        [
+          {
+            "node": "Welcome Note Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Welcome Note",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Welcome Note Sheet": {
+      "main": [
+        [
+          {
+            "node": "Random Email1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Meeting Alert": {
+      "main": [
+        [
+          {
+            "node": "Get availability in a calendar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Random Email1": {
+      "main": [
+        [
+          {
+            "node": "Meeting Alert",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update": {
+      "main": [
+        [
+          {
+            "node": "Meeting Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1148bd9c-74ee-4ef4-b4f4-d37b54ea0c6c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4bc55106a3fc8351072dacd3189f86f6d66674cda4d4487154e99c4e9f820e8e"
+  },
+  "id": "lAyaJjgAWOIuauKC",
+  "tags": []
+}
