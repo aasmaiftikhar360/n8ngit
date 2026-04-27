@@ -1,0 +1,673 @@
+{
+  "name": "My workflow - RunwayML Complete Fixed 50%",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Product Try-On & Video Maker",
+        "formDescription": "Upload your photo and product image — AI will virtually try the product on you and generate a video!",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Your Name",
+              "placeholder": "e.g. Ali, Sara...",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Your Photo",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".jpg,.jpeg,.png,.webp",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Product Image",
+              "fieldType": "file",
+              "multipleFiles": false,
+              "acceptFileTypes": ".jpg,.jpeg,.png,.webp",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Product Type",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "T-Shirt / Top"
+                  },
+                  {
+                    "option": "Dress / Suit"
+                  },
+                  {
+                    "option": "Ring / Jewelry"
+                  },
+                  {
+                    "option": "Shoes / Footwear"
+                  },
+                  {
+                    "option": "Watch"
+                  },
+                  {
+                    "option": "Bag / Purse"
+                  },
+                  {
+                    "option": "Glasses / Sunglasses"
+                  },
+                  {
+                    "option": "Other / Any"
+                  }
+                ]
+              },
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Video Style",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Slow & Smooth (Showcase)"
+                  },
+                  {
+                    "option": "Dynamic & Fast (Social Media)"
+                  },
+                  {
+                    "option": "Gentle & Elegant"
+                  }
+                ]
+              },
+              "requiredField": true
+            }
+          ]
+        },
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "08596f1d-e253-4b86-998f-d7f97ac37b86",
+      "name": "Product Form Trigger",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.2,
+      "position": [
+        -5280,
+        20288
+      ],
+      "webhookId": "f1e35c51-206f-403d-8e92-73dca4623043"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "user_name",
+              "value": "={{ $json['Your Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "product_type",
+              "value": "={{ $json['Product Type'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "video_style",
+              "value": "={{ $json['Video Style'] }}",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "tryon_prompt",
+              "value": "=A person wearing {{ $json['Product Type'] }}, photorealistic, high quality, fashion photography, clean background, professional lighting",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "7283fb15-f4ee-479a-bccb-218ca335e111",
+      "name": "Set Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -5056,
+        20288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dssuuzlhc/image/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic NTY4MjQyNjg5NTM1NDk3OnRZOHNOUEtBWFhyenJpQ09IUHBWZjRRRTRXRQ=="
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "Your_Photo"
+            },
+            {
+              "name": "folder",
+              "value": "tryon_inputs/persons"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "85f6092f-7282-4b05-a228-37f426ec3a14",
+      "name": "Person Image Upload Cloudinary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5056,
+        20096
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dssuuzlhc/image/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic NTY4MjQyNjg5NTM1NDk3OnRZOHNOUEtBWFhyenJpQ09IUHBWZjRRRTRXRQ=="
+            }
+          ]
+        },
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "Product_Image"
+            },
+            {
+              "name": "folder",
+              "value": "tryon_inputs/products"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f165a155-168a-4dcd-803a-57fa82aca579",
+      "name": "Product Image Upload Cloudinary",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -5056,
+        20480
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "id": "7a056c5b-da3a-44d2-8457-38185a6d1333",
+      "name": "Merge Both URLs",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        -4832,
+        20288
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "b1",
+              "name": "person_image_url",
+              "value": "={{ $json.secure_url }}",
+              "type": "string"
+            },
+            {
+              "id": "b2",
+              "name": "product_image_url",
+              "value": "={{ $('Product Image Upload Cloudinary').item.json.secure_url }}",
+              "type": "string"
+            },
+            {
+              "id": "b3",
+              "name": "tryon_prompt",
+              "value": "=A person wearing {{ $('Product Form Trigger').item.json['Product Type'] }}, photorealistic, high quality, fashion photography, clean background, professional lighting",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "a3b00eb6-e182-4f6e-9862-d596cf17338a",
+      "name": "Save URLs",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4608,
+        20288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.dev.runwayml.com/v1/image_to_video",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_33d2511d5059eb118d08bf21d564fdd817404e6a4f4eb07c7b02cdd4492b0659d42ad3c1a32cec309da854df7a3ecc9fa77966042125752bac4c93b55b3652bc"
+            },
+            {
+              "name": "X-Runway-Version",
+              "value": "2024-11-06"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"gen4_turbo\",\n  \"promptImage\": \"{{ $json.person_image_url }}\",\n  \"promptText\": \"{{ $json.tryon_prompt }}\",\n  \"ratio\": \"832:1104\",\n  \"duration\": 5\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "id": "0febe966-b4fe-4613-afb7-7e0c2129a4f3",
+      "name": "RunwayML - Video Task Start1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -4384,
+        20288
+      ],
+      "notes": "Runway ML Gen4 Turbo — Start video task. Task ID will be returned."
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "c1",
+              "name": "runway_task_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "c2",
+              "name": "runway_status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f1773e52-2973-478c-9ff3-048855ce19d8",
+      "name": "Save Task ID",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -4160,
+        20288
+      ],
+      "notes": "Save the Task ID received from Runway"
+    },
+    {
+      "parameters": {
+        "amount": 15
+      },
+      "id": "7be18db2-0bd7-4f9a-a706-9aa42abd3c28",
+      "name": "15 Second Wait1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -3936,
+        20288
+      ],
+      "webhookId": "wait-runway-polling-001",
+      "notes": "Give Runway time to generate the video"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.dev.runwayml.com/v1/tasks/{{ $json.runway_task_id }}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer key_33d2511d5059eb118d08bf21d564fdd817404e6a4f4eb07c7b02cdd4492b0659d42ad3c1a32cec309da854df7a3ecc9fa77966042125752bac4c93b55b3652bc"
+            },
+            {
+              "name": "X-Runway-Version",
+              "value": "2024-11-06"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 30000
+        }
+      },
+      "id": "c8ce9c45-6107-45f8-bbf7-57c66f00ef35",
+      "name": "RunwayML - Status Check1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3712,
+        20224
+      ],
+      "notes": "Check task status: SUCCEEDED / FAILED / RUNNING"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "if-succeeded",
+              "leftValue": "={{ $json.status }}",
+              "rightValue": "SUCCEEDED",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "8215efdc-c72b-4ad0-a201-a6039d4e96f4",
+      "name": "Is Video Ready?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -3488,
+        20224
+      ],
+      "notes": "SUCCEEDED → retrieve video URL | RUNNING → go back to wait"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1",
+              "name": "runway_task_id",
+              "value": "={{ $json.id }}",
+              "type": "string"
+            },
+            {
+              "id": "d2",
+              "name": "runway_status",
+              "value": "={{ $json.status }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6691501d-e785-42de-896c-23158eafec3a",
+      "name": "Pass Loop Data",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3264,
+        20384
+      ],
+      "notes": "Still RUNNING — carry task ID and send back to wait"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "e1",
+              "name": "runway_video_url",
+              "value": "={{ $json.output[0] }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cd09a139-a3b0-493e-94d0-e17df6e060d4",
+      "name": "Save Video URL",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -3264,
+        20176
+      ],
+      "notes": "SUCCEEDED — extract the final video URL from Runway"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dssuuzlhc/video/upload",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Basic NTY4MjQyNjg5NTM1NDk3OnRZOHNOUEtBWFhyenJpQ09IUHBWZjRRRTRXRQ=="
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"file\": \"{{ $json.runway_video_url }}\",\n  \"folder\": \"tryon_videos\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 120000
+        }
+      },
+      "id": "f3bc16ca-f94c-420e-834a-b83fd409e5b8",
+      "name": "Final Video Cloudinary Upload",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -3040,
+        20176
+      ],
+      "notes": "Upload the Runway video URL to Cloudinary"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Product Form Trigger": {
+      "main": [
+        [
+          {
+            "node": "Person Image Upload Cloudinary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Product Image Upload Cloudinary",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Set Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Person Image Upload Cloudinary": {
+      "main": [
+        [
+          {
+            "node": "Merge Both URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Product Image Upload Cloudinary": {
+      "main": [
+        [
+          {
+            "node": "Merge Both URLs",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge Both URLs": {
+      "main": [
+        [
+          {
+            "node": "Save URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save URLs": {
+      "main": [
+        [
+          {
+            "node": "RunwayML - Video Task Start1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RunwayML - Video Task Start1": {
+      "main": [
+        [
+          {
+            "node": "Save Task ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Task ID": {
+      "main": [
+        [
+          {
+            "node": "15 Second Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "15 Second Wait1": {
+      "main": [
+        [
+          {
+            "node": "RunwayML - Status Check1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "RunwayML - Status Check1": {
+      "main": [
+        [
+          {
+            "node": "Is Video Ready?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Video Ready?": {
+      "main": [
+        [
+          {
+            "node": "Save Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pass Loop Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pass Loop Data": {
+      "main": [
+        [
+          {
+            "node": "15 Second Wait1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Video URL": {
+      "main": [
+        [
+          {
+            "node": "Final Video Cloudinary Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "80e7a37b-07e9-4f12-8ec8-b4cee8d15f1d",
+  "meta": {
+    "instanceId": "47157578b32380130e6eb365b366c37d3f27f5581aed2a933d648c6785d75d78"
+  },
+  "id": "18f7MB7GMheDgFO3",
+  "tags": []
+}

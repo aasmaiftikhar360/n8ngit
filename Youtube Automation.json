@@ -1,0 +1,1214 @@
+{
+  "name": "100% fix youtube ALL Done11221",
+  "nodes": [
+    {
+      "parameters": {
+        "path": "0efdb187-94fe-4a21-b7ba-38b4fdb981c1",
+        "formTitle": "🎬 Video Banao - Topic Dalo",
+        "formDescription": "Jo bhi topic chahiye, likho — AI automatically correct prompt, script aur video banayega!",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Video Topic / Idea",
+              "placeholder": "Jaise: Cartoon story about a brave lion, AI tools for students, How to earn money online",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Language",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "English"
+                  },
+                  {
+                    "option": "Urdu"
+                  },
+                  {
+                    "option": "Hindi"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2a990675-38f0-40fb-8dbe-12e4b1c2b5a3",
+      "name": "🎬 Topic Input Form1",
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        192
+      ],
+      "webhookId": "0efdb187-94fe-4a21-b7ba-38b4fdb981c1"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.groq.com/openai/v1/chat/completions",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer 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"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"model\": \"llama-3.3-70b-versatile\",\n  \"temperature\": 0.85,\n  \"max_tokens\": 1500,\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"You are an expert YouTube content creator for . The user gives you a topic or idea. Your job is: 1) Generate the MOST CORRECT and POWERFUL video prompt for that exact topic. 2) Write a script STRICTLY about that same topic only. 3) All other fields must also match the same topic. NEVER change the topic. NEVER go off-topic. Always respond with ONLY valid raw JSON, no markdown, no backticks, no explanation.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"User Topic: {{$('🎬 Topic Input Form1').item.json['Video Topic / Idea']}}\\nLanguage: {{$('🎬 Topic Input Form1').item.json['Language'] || 'English'}}\\n\\nGenerate a YouTube video package STRICTLY about this exact topic. Do NOT change the topic.\\n\\nRETURN ONLY THIS JSON:\\n{\\n  \\\"title\\\": \\\"SEO optimized title under 65 chars, must match the topic exactly\\\",\\n  \\\"description\\\": \\\"250-300 words YouTube description strictly about this topic\\\",\\n  \\\"tags\\\": [\\\"topic keyword 1\\\", \\\"topic keyword 2\\\", \\\"topic keyword 3\\\", \\\"\\\", \\\"\\\", \\\"tech\\\", \\\"2026\\\"],\\n  \\\"script\\\": \\\"180-200 words voiceover STRICTLY about this topic. Start with: Welcome. End with: \\\",\\n  \\\"search_query\\\": \\\"3 word pexels video search term that exactly matches this topic\\\",\\n  \\\"music_query\\\": \\\"background music mood matching this topic\\\",\\n  \\\"topic\\\": \\\"exact topic as given by user\\\",\\n  \\\"video_prompt\\\": \\\"detailed AI video generation prompt strictly about this topic, cinematic, realistic or cartoon as needed\\\",\\n  \\\"intro_text\\\": \\\"\\\",\\n  \\\"outro_text\\\": \\\"\\\",\\n  \\\"watermark\\\": \\\"\\\"\\n}\"\n    }\n  ]\n}",
+        "options": {}
+      },
+      "id": "f63fc501-d216-4ebc-bb3e-f589ae92fc61",
+      "name": "🧠 Groq - Topic se Prompt & Script1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        -448,
+        192
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eC7vCHJzu4srlnk6",
+          "name": "shot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const raw = $input.first().json.choices[0].message.content;\n\nlet cleaned = raw.replace(/```json\\s*/gi, '').replace(/```\\s*/g, '').trim();\n\nconst startIdx = cleaned.indexOf('{');\nconst endIdx = cleaned.lastIndexOf('}');\nif (startIdx === -1 || endIdx === -1) {\n  throw new Error('No JSON found: ' + cleaned.substring(0, 200));\n}\ncleaned = cleaned.substring(startIdx, endIdx + 1);\n\nlet data;\ntry {\n  data = JSON.parse(cleaned);\n} catch(e) {\n  cleaned = cleaned.replace(/\"((?:[^\"\\\\]|\\\\.)*)\"/gs, (match, inner) => {\n    const fixed = inner\n      .replace(/\\n/g, '\\\\n')\n      .replace(/\\r/g, '\\\\r')\n      .replace(/\\t/g, '\\\\t');\n    return '\"' + fixed + '\"';\n  });\n  try {\n    data = JSON.parse(cleaned);\n  } catch(e2) {\n    throw new Error('Parse failed: ' + e2.message + ' | Content: ' + cleaned.substring(0, 300));\n  }\n}\n\ndata.user_topic = $('🎬 Topic Input Form1').item.json['Video Topic / Idea'];\ndata.user_language = $('🎬 Topic Input Form1').item.json['Language'] || 'English';\n\nreturn [{ json: data }];"
+      },
+      "id": "cf8fc2c6-1382-4788-ab3e-0b595ad11247",
+      "name": "🔍 Parse Topic Response1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -224,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://api.voicerss.org/",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "key",
+              "value": "4131927a21b345ea908f60af12370083"
+            },
+            {
+              "name": "hl",
+              "value": "en-us"
+            },
+            {
+              "name": "v",
+              "value": "Linda"
+            },
+            {
+              "name": "r",
+              "value": "0"
+            },
+            {
+              "name": "c",
+              "value": "MP3"
+            },
+            {
+              "name": "f",
+              "value": "44khz_16bit_stereo"
+            },
+            {
+              "name": "src",
+              "value": "={{ $json.script }}"
+            }
+          ]
+        },
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "a17465c7-2e50-4f45-b66d-ad37ee465097",
+      "name": "🎙️ Topic TTS - Voiceover1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.cloudinary.com/v1_1/dsey5hsze/auto/upload",
+        "sendBody": true,
+        "contentType": "multipart-form-data",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "parameterType": "formBinaryData",
+              "name": "file",
+              "inputDataFieldName": "data"
+            },
+            {
+              "name": "upload_preset",
+              "value": "ml_default"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "229e7e5d-e5e8-47da-822a-055304ba238e",
+      "name": "☁️ Topic Audio - Cloudinary Upload1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const uploadResult = $input.first().json;\nconst directUrl = uploadResult?.secure_url ?? uploadResult?.url ?? '';\nif (!directUrl) throw new Error('Cloudinary upload failed: ' + JSON.stringify(uploadResult));\nreturn [{ json: { audioUrl: directUrl } }];"
+      },
+      "id": "a9956ccb-cdee-4565-b66d-25316ee24b6f",
+      "name": "🔗 Topic Get Audio URL1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pexels.com/videos/search?query={{encodeURIComponent($('🔍 Parse Topic Response1').item.json.search_query)}}&per_page=10&orientation=landscape&size=medium",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=MOAhyIIBsjmwKxZE0pwqrpuZk5xE3H75NujlUu7cCGGj4RGbjdp4AO34"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "71605123-af25-471c-bc87-15c8f4b5c1e3",
+      "name": "🎥 Topic Pexels - Fetch Videos1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        448,
+        192
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eC7vCHJzu4srlnk6",
+          "name": "shot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const musicList = [\n  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',\n  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3',\n  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3',\n  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3',\n  'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'\n];\nconst randomMusic = musicList[Math.floor(Math.random() * musicList.length)];\nreturn [{ json: { musicUrl: randomMusic } }];"
+      },
+      "id": "5f17b0a0-c19f-4263-9e83-94cafefa66e8",
+      "name": "🎵 Topic Background Music1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        448,
+        384
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "id": "607b1a00-939f-4424-afb4-a0f4fa135721",
+      "name": "🔀 Topic Merge All1",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3,
+      "position": [
+        672,
+        176
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const allItems = $input.all();\nlet pexelsData = {};\nlet scriptData = {};\nlet audioUrlData = {};\nlet musicData = {};\n\nfor (const item of allItems) {\n  const j = item.json;\n  if (j.videos) {\n    pexelsData = j;\n  } else if (j.script) {\n    scriptData = j;\n  } else if (j.audioUrl) {\n    audioUrlData = j;\n  } else if (j.musicUrl) {\n    musicData = j;\n  }\n}\n\nconst audioUrl = audioUrlData.audioUrl \n  || allItems.find(i => i.json.audioUrl)?.json.audioUrl \n  || '';\n\nconst musicUrl = musicData.musicUrl || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';\nconst videos = pexelsData.videos ?? [];\nconst videoClips = videos\n  .slice(0, 5)\n  .map(v => {\n    const hdFile = v.video_files?.find(f => f.quality === 'hd' && f.width >= 1280)\n      || v.video_files?.find(f => f.width >= 1280)\n      || v.video_files?.[0];\n    return hdFile ? hdFile.link : null;\n  })\n  .filter(Boolean);\n\nconst timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);\nreturn [{ json: { ...scriptData, videoClips, audioUrl, musicUrl, timestamp } }];"
+      },
+      "id": "a7282c6c-2b33-41a4-8377-2bc0f5fd1254",
+      "name": "📦 Topic Prepare Assets1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $input.first().json;\nconst clips = data.videoClips;\nif (!clips || clips.length === 0) return [{ json: { error: 'No video clips found' } }];\n\nconst validClips = clips.filter(url => url && url.includes('.mp4'));\nconst useClips = validClips.length > 0 ? validClips : clips;\nconst clipDuration = Math.floor(60 / useClips.length);\nconst totalDuration = clipDuration * useClips.length;\n\nconst shotstackClips = useClips.map((url, i) => ({\n  asset: { type: 'video', src: url, trim: 0, volume: 0 },\n  start: i * clipDuration,\n  length: clipDuration,\n  fit: 'cover',\n  scale: 1\n}));\n\nconst titleClip = {\n  asset: {\n    type: 'html',\n    html: '<p>' + (data.title || 'Video') + '</p>',\n    css: 'p { font-family: Arial; font-size: 36px; color: #ffffff; text-align: center; text-shadow: 2px 2px 8px #000000; font-weight: bold; }',\n    width: 1280,\n    height: 200\n  },\n  start: 0,\n  length: 4,\n  position: 'bottom',\n  offset: { y: -0.1 }\n};\n\nconst watermarkClip = {\n  asset: {\n    type: 'html',\n    html: '<p></p>',\n    css: 'p { font-family: Arial; font-size: 28px; color: #FFD700; font-weight: bold; text-shadow: 2px 2px 6px #000000; background: rgba(0,0,0,0.5); padding: 8px 16px; border-radius: 8px; white-space: nowrap; }',\n    width: 500,\n    height: 80\n  },\n  start: 0,\n  length: totalDuration,\n  position: 'bottomLeft',\n  offset: { x: 0.02, y: 0.05 },\n  opacity: 1\n};\n\nconst musicUrl = data.musicUrl || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';\nconst audioUrl = data.audioUrl || '';\n\nconst tracks = [\n  { clips: [watermarkClip] },\n  { clips: [titleClip] },\n  { clips: shotstackClips }\n];\n\nif (audioUrl && audioUrl.startsWith('https://')) {\n  tracks.splice(2, 0, {\n    clips: [{\n      asset: {\n        type: 'audio',\n        src: audioUrl,\n        volume: 1,\n        effect: 'fadeIn'\n      },\n      start: 0,\n      length: totalDuration\n    }]\n  });\n}\n\nconst shotstackPayload = {\n  timeline: {\n    soundtrack: {\n      src: musicUrl,\n      effect: 'fadeIn',\n      volume: audioUrl ? 0.15 : 0.8\n    },\n    background: '#000000',\n    tracks: tracks\n  },\n  output: {\n    format: 'mp4',\n    resolution: 'hd',\n    fps: 25,\n    size: { width: 1920, height: 1080 }\n  },\n  merge: []\n};\n\nreturn [{ json: { ...data, shotstackPayload } }];"
+      },
+      "id": "9216eb42-1e9f-4eb7-a815-45bbdc0403b8",
+      "name": "🎬 Topic Build Shotstack Payload1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1120,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.shotstack.io/v1/render",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "MNN3eg4xKuyvYU9v2k2b3m8ZUlOzjpKd4PeOj5lK"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{JSON.stringify($('🎬 Topic Build Shotstack Payload1').item.json.shotstackPayload)}}",
+        "options": {}
+      },
+      "id": "db300e76-67ab-43d6-984e-c251cb1f9c07",
+      "name": "🚀 Topic Shotstack - Submit Render1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        1344,
+        192
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eC7vCHJzu4srlnk6",
+          "name": "shot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const responseData = $input.first().json;\nconst renderId = responseData?.response?.id ?? responseData?.id;\nif (!renderId) throw new Error('Render ID not found: ' + JSON.stringify(responseData));\nconst allData = $('🎬 Topic Build Shotstack Payload1').item.json;\nreturn [{ json: { ...allData, renderId } }];"
+      },
+      "id": "45fee7d2-a0f7-46b2-899e-56b6095279b5",
+      "name": "🆔 Topic Extract Render ID1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1568,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "id": "843cb6fa-7af4-4b45-815d-db9454b6e083",
+      "name": "⏳ Topic Wait 60s1",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1792,
+        192
+      ],
+      "webhookId": "topic-wait-render"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.shotstack.io/v1/render/{{$json.renderId}}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "MNN3eg4xKuyvYU9v2k2b3m8ZUlOzjpKd4PeOj5lK"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "28541858-7f0b-43d2-ba36-a360e793a137",
+      "name": "📊 Topic Poll Render Status1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2016,
+        112
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eC7vCHJzu4srlnk6",
+          "name": "shot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.response.status}}",
+              "operation": "equals",
+              "value2": "done"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "276338bb-24ee-41f2-b206-f1cc531c5f89",
+      "name": "✅ Topic Is Render Done?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        2240,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const statusData = $input.first().json;\nconst prevData = $('🆔 Topic Extract Render ID1').item.json;\n\nconst videoUrl = \n  statusData?.response?.url ??\n  statusData?.response?.data?.url ??\n  statusData?.data?.url ??\n  statusData?.url ??\n  null;\n\nif (!videoUrl) {\n  throw new Error('Video URL not found. Response was: ' + JSON.stringify(statusData));\n}\n\nreturn [{\n  json: {\n    ...prevData,\n    finalVideoUrl: videoUrl,\n    renderStatus: statusData?.response?.status ?? 'done'\n  }\n}];"
+      },
+      "id": "5505e172-3b1c-489c-b133-f8c2368fdd12",
+      "name": "🎞️ Topic Extract Final Video URL1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2464,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{$json.finalVideoUrl}}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "1fa3476d-53c9-4937-936a-27413c7c0b5c",
+      "name": "⬇️ Topic Download Video1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2688,
+        192
+      ]
+    },
+    {
+      "parameters": {
+        "name": "={{$('🎞️ Topic Extract Final Video URL1').item.json.title + ' - ' + $('🎞️ Topic Extract Final Video URL1').item.json.timestamp + '.mp4'}}",
+        "driveId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "My Drive"
+        },
+        "folderId": {
+          "__rl": true,
+          "value": "1c8TtjIPC91ohbaaps4N-64auPkEXnYKe",
+          "mode": "list",
+          "cachedResultName": "Youtube",
+          "cachedResultUrl": "https://drive.google.com/drive/folders/1c8TtjIPC91ohbaaps4N-64auPkEXnYKe"
+        },
+        "options": {}
+      },
+      "id": "e3de1a73-ea42-47e9-b9bd-215f7e46e278",
+      "name": "💾 Topic Google Drive - Save1",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        2912,
+        192
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8kttA7igke4NdZoY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "={{'https://www.googleapis.com/drive/v3/files/' + $json.id + '?alt=media'}}",
+        "authentication": "predefinedCredentialType",
+        "nodeCredentialType": "googleDriveOAuth2Api",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "a4a1ce69-2a46-4ea9-a92d-c48409dfa3f7",
+      "name": "🔄 Topic Re-Download for YouTube1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3136,
+        192
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "8kttA7igke4NdZoY",
+          "name": "Google Drive account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('🎙️ Topic TTS - Voiceover1').item.json.title }}",
+        "regionCode": "PK",
+        "categoryId": "22",
+        "options": {
+          "description": "={{ $('🎙️ Topic TTS - Voiceover1').item.json.description }}"
+        }
+      },
+      "id": "d017f5d4-3b53-42d4-957b-cbd175820dea",
+      "name": "📺 Topic YouTube - Upload1",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        3360,
+        192
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "9nfHN9cgzEMeOHFE",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const uploadResult = $input.first().json;\nconst scriptData = $('🎞️ Topic Extract Final Video URL1').item.json;\n\nconst report = {\n  status: 'SUCCESS ✅',\n  videoId: uploadResult.id,\n  youtubeUrl: `https://youtube.com/watch?v=${uploadResult.id}`,\n  title: scriptData.title,\n  user_topic: scriptData.user_topic,\n  topic: scriptData.topic,\n  video_prompt: scriptData.video_prompt,\n  tags: scriptData.tags,\n  shotstackRender: scriptData.finalVideoUrl,\n  aiModel: 'Groq llama-3.3-70b-versatile',\n  tts: 'VoiceRSS TTS',\n  videoAssembly: 'Shotstack Cloud API',\n  uploadedAt: new Date().toISOString()\n};\n\nconsole.log('✅ Topic Video Published!', JSON.stringify(report, null, 2));\nreturn [{ json: report }];"
+      },
+      "id": "2789aceb-567b-4d05-940c-872ad6063408",
+      "name": "📋 Topic Log Success1",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3584,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const data = $('🎞️ Topic Extract Final Video URL1').item.json;\n\n// Try portrait clips first, fall back to landscape with contain\nconst portraitClips = ($('📋 Short Extract Portrait URLs').item.json || {}).shortPortraitClips || [];\nconst landscapeClips = (data.videoClips || []).filter(url => url && url.includes('.mp4'));\n\n// Use portrait if available, else landscape\nconst rawClips = portraitClips.length > 0 ? portraitClips : landscapeClips;\nconst useClips = rawClips.slice(0, 5); // max 5 clips\n\nif (useClips.length === 0) return [{ json: { error: 'No video clips found for short' } }];\n\nconst clipDuration = Math.floor(56 / useClips.length);\nconst totalDuration = clipDuration * useClips.length;\nconst usingPortrait = portraitClips.length > 0;\n\nconst shotstackClips = useClips.map((url, i) => ({\n  asset: { type: 'video', src: url, trim: 0, volume: 0 },\n  start: i * clipDuration,\n  length: clipDuration,\n  fit: usingPortrait ? 'cover' : 'contain',  // portrait=cover, landscape=contain (no stretch)\n  scale: 1\n}));\n\nconst titleClip = {\n  asset: {\n    type: 'html',\n    html: '<p>' + (data.title || 'Short Video') + '</p>',\n    css: 'p { font-family: Arial; font-size: 40px; color: #ffffff; text-align: center; text-shadow: 2px 2px 8px #000000; font-weight: bold; padding: 0 20px; }',\n    width: 1080,\n    height: 200\n  },\n  start: 0,\n  length: 5,\n  position: 'bottom',\n  offset: { y: -0.05 }\n};\n\nconst musicUrl = data.musicUrl || 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3';\nconst audioUrl = data.audioUrl || '';\n\nconst tracks = [\n  { clips: [titleClip] },\n  { clips: shotstackClips }\n];\n\nif (audioUrl && audioUrl.startsWith('https://')) {\n  tracks.splice(1, 0, {\n    clips: [{\n      asset: { type: 'audio', src: audioUrl, volume: 1, effect: 'fadeIn' },\n      start: 0,\n      length: totalDuration\n    }]\n  });\n}\n\nconst shortPayload = {\n  timeline: {\n    soundtrack: { src: musicUrl, effect: 'fadeIn', volume: audioUrl ? 0.15 : 0.8 },\n    background: '#000000',\n    tracks: tracks\n  },\n  output: {\n    format: 'mp4',\n    resolution: 'hd',\n    fps: 25,\n    size: { width: 1080, height: 1920 }\n  },\n  merge: []\n};\n\nreturn [{ json: { ...data, shortPayload, shortTotalDuration: totalDuration, usingPortrait } }];"
+      },
+      "id": "0b6367fb-ab7c-49d1-98fe-7855dee2f888",
+      "name": "📱 Short Build Shotstack Payload",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4032,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.shotstack.io/v1/render",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "MNN3eg4xKuyvYU9v2k2b3m8ZUlOzjpKd4PeOj5lK"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify($json.shortPayload) }}",
+        "options": {}
+      },
+      "id": "7aed3cac-c2ac-4a3f-a5be-aa791d530b67",
+      "name": "🚀 Short Shotstack - Submit Render",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4256,
+        288
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eC7vCHJzu4srlnk6",
+          "name": "shot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst renderId = response.response?.id || response.id;\nif (!renderId) throw new Error('Short render ID not found: ' + JSON.stringify(response));\nreturn [{ json: { ...$('📱 Short Build Shotstack Payload').item.json, shortRenderId: renderId } }];"
+      },
+      "id": "f652c1a9-57a7-419d-9f68-b74da61d6964",
+      "name": "🆔 Short Extract Render ID",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        4480,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "amount": 60
+      },
+      "id": "bc2b0136-34b0-49f3-aa26-1df7b9a53d81",
+      "name": "⏳ Short Wait 60s",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        4704,
+        288
+      ],
+      "webhookId": "topic-wait-render"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.shotstack.io/v1/render/{{ $('🆔 Short Extract Render ID').item.json.shortRenderId }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "x-api-key",
+              "value": "MNN3eg4xKuyvYU9v2k2b3m8ZUlOzjpKd4PeOj5lK"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "16957d12-9558-4f83-82b3-7c9def2ad6da",
+      "name": "📊 Short Poll Render Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        4928,
+        224
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eC7vCHJzu4srlnk6",
+          "name": "shot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.response.status}}",
+              "operation": "equals",
+              "value2": "done"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ec4c4a74-b15c-4d2b-86d4-5e9eb8f4f1d3",
+      "name": "✅ Short Is Render Done?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        5152,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const response = $input.first().json;\nconst videoUrl = response.response?.url || response.url;\nif (!videoUrl) throw new Error('Short video URL not found');\nconst baseData = $('🆔 Short Extract Render ID').item.json;\nreturn [{ json: { ...baseData, shortFinalVideoUrl: videoUrl } }];"
+      },
+      "id": "062fb808-7d15-426d-96a1-53e8c27e4c42",
+      "name": "🎞️ Short Extract Final Video URL",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        5376,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "={{ $json.shortFinalVideoUrl }}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
+      },
+      "id": "82666cf1-a9bd-4aa0-9989-7d7a0b9a70e9",
+      "name": "⬇️ Short Download Video",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        5600,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "video",
+        "operation": "upload",
+        "title": "={{ $('🎙️ Topic TTS - Voiceover1').item.json.title }} ",
+        "regionCode": "PK",
+        "categoryId": "22",
+        "options": {
+          "description": "={{ $('🎙️ Topic TTS - Voiceover1').item.json.description }}"
+        }
+      },
+      "id": "50aa989f-6679-48aa-a6dc-b68ea5a4be04",
+      "name": "📱 Short YouTube - Upload",
+      "type": "n8n-nodes-base.youTube",
+      "typeVersion": 1,
+      "position": [
+        5824,
+        288
+      ],
+      "credentials": {
+        "youTubeOAuth2Api": {
+          "id": "9nfHN9cgzEMeOHFE",
+          "name": "YouTube account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const uploadResult = $input.first().json;\nconst scriptData = $('🆔 Short Extract Render ID').item.json;\n\nconst report = {\n  status: 'SHORT SUCCESS ✅',\n  videoId: uploadResult.id,\n  youtubeShortUrl: `https://youtube.com/shorts/${uploadResult.id}`,\n  title: scriptData.title + ' #Shorts',\n  shortRender: scriptData.shortFinalVideoUrl,\n  uploadedAt: new Date().toISOString()\n};\n\nconsole.log('✅ Short Video Published!', JSON.stringify(report, null, 2));\nreturn [{ json: report }];"
+      },
+      "id": "fadc7562-b67d-4771-88a1-95c22c10da4d",
+      "name": "📋 Short Log Success",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        6048,
+        288
+      ]
+    },
+    {
+      "parameters": {
+        "url": "=https://api.pexels.com/videos/search?query={{encodeURIComponent($('🔍 Parse Topic Response1').item.json.search_query)}}&per_page=10&orientation=portrait&size=medium",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=MOAhyIIBsjmwKxZE0pwqrpuZk5xE3H75NujlUu7cCGGj4RGbjdp4AO34"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "de1fb6d4-6359-4d17-9dbe-f7eb5960e5e1",
+      "name": "🎥 Short Pexels - Portrait Videos",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        3584,
+        288
+      ],
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "eC7vCHJzu4srlnk6",
+          "name": "shot"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const pexelsData = $input.first().json;\nconst videos = pexelsData.videos || [];\nconst videoUrls = [];\n\nfor (const video of videos) {\n  const files = video.video_files || [];\n  \n  const portrait = files.find(f => f.quality === 'hd' && f.width && f.height && f.height > f.width);\n  const sd = files.find(f => f.quality === 'sd' && f.width && f.height && f.height > f.width);\n  const any = files.find(f => f.link && f.link.includes('.mp4'));\n  \n  const chosen = portrait || sd || any;\n  if (chosen) videoUrls.push(chosen.link);\n  if (videoUrls.length >= 6) break;\n}\n\nreturn [{ json: { shortPortraitClips: videoUrls } }];"
+      },
+      "id": "0af6fac0-fe2b-43eb-8f75-ca7599eb900e",
+      "name": "📋 Short Extract Portrait URLs",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3808,
+        288
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "🎬 Topic Input Form1": {
+      "main": [
+        [
+          {
+            "node": "🧠 Groq - Topic se Prompt & Script1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🧠 Groq - Topic se Prompt & Script1": {
+      "main": [
+        [
+          {
+            "node": "🔍 Parse Topic Response1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔍 Parse Topic Response1": {
+      "main": [
+        [
+          {
+            "node": "🎙️ Topic TTS - Voiceover1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🎥 Topic Pexels - Fetch Videos1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🎵 Topic Background Music1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎙️ Topic TTS - Voiceover1": {
+      "main": [
+        [
+          {
+            "node": "☁️ Topic Audio - Cloudinary Upload1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "☁️ Topic Audio - Cloudinary Upload1": {
+      "main": [
+        [
+          {
+            "node": "🔗 Topic Get Audio URL1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔗 Topic Get Audio URL1": {
+      "main": [
+        [
+          {
+            "node": "🔀 Topic Merge All1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎥 Topic Pexels - Fetch Videos1": {
+      "main": [
+        [
+          {
+            "node": "🔀 Topic Merge All1",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "🎵 Topic Background Music1": {
+      "main": [
+        [
+          {
+            "node": "🔀 Topic Merge All1",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "🔀 Topic Merge All1": {
+      "main": [
+        [
+          {
+            "node": "📦 Topic Prepare Assets1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📦 Topic Prepare Assets1": {
+      "main": [
+        [
+          {
+            "node": "🎬 Topic Build Shotstack Payload1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎬 Topic Build Shotstack Payload1": {
+      "main": [
+        [
+          {
+            "node": "🚀 Topic Shotstack - Submit Render1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚀 Topic Shotstack - Submit Render1": {
+      "main": [
+        [
+          {
+            "node": "🆔 Topic Extract Render ID1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🆔 Topic Extract Render ID1": {
+      "main": [
+        [
+          {
+            "node": "⏳ Topic Wait 60s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏳ Topic Wait 60s1": {
+      "main": [
+        [
+          {
+            "node": "📊 Topic Poll Render Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Topic Poll Render Status1": {
+      "main": [
+        [
+          {
+            "node": "✅ Topic Is Render Done?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Topic Is Render Done?1": {
+      "main": [
+        [
+          {
+            "node": "🎞️ Topic Extract Final Video URL1",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "⏳ Topic Wait 60s1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎞️ Topic Extract Final Video URL1": {
+      "main": [
+        [
+          {
+            "node": "⬇️ Topic Download Video1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⬇️ Topic Download Video1": {
+      "main": [
+        [
+          {
+            "node": "💾 Topic Google Drive - Save1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "💾 Topic Google Drive - Save1": {
+      "main": [
+        [
+          {
+            "node": "🔄 Topic Re-Download for YouTube1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🔄 Topic Re-Download for YouTube1": {
+      "main": [
+        [
+          {
+            "node": "📺 Topic YouTube - Upload1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📺 Topic YouTube - Upload1": {
+      "main": [
+        [
+          {
+            "node": "📋 Topic Log Success1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "🎥 Short Pexels - Portrait Videos",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Short Build Shotstack Payload": {
+      "main": [
+        [
+          {
+            "node": "🚀 Short Shotstack - Submit Render",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🚀 Short Shotstack - Submit Render": {
+      "main": [
+        [
+          {
+            "node": "🆔 Short Extract Render ID",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🆔 Short Extract Render ID": {
+      "main": [
+        [
+          {
+            "node": "⏳ Short Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⏳ Short Wait 60s": {
+      "main": [
+        [
+          {
+            "node": "📊 Short Poll Render Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📊 Short Poll Render Status": {
+      "main": [
+        [
+          {
+            "node": "✅ Short Is Render Done?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "✅ Short Is Render Done?": {
+      "main": [
+        [
+          {
+            "node": "🎞️ Short Extract Final Video URL",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "⏳ Short Wait 60s",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎞️ Short Extract Final Video URL": {
+      "main": [
+        [
+          {
+            "node": "⬇️ Short Download Video",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "⬇️ Short Download Video": {
+      "main": [
+        [
+          {
+            "node": "📱 Short YouTube - Upload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📱 Short YouTube - Upload": {
+      "main": [
+        [
+          {
+            "node": "📋 Short Log Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "🎥 Short Pexels - Portrait Videos": {
+      "main": [
+        [
+          {
+            "node": "📋 Short Extract Portrait URLs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "📋 Short Extract Portrait URLs": {
+      "main": [
+        [
+          {
+            "node": "📱 Short Build Shotstack Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "34d5a4ab-6dcf-468d-b60f-df76ef123867",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4eb37c0c4570a1e47ef62c7e5e3e0434b110bf7bc8b62abc140196d3acf6ea84"
+  },
+  "id": "YpEBicJvG16SM4zI",
+  "tags": [
+    {
+      "updatedAt": "2026-03-31T10:28:08.442Z",
+      "createdAt": "2026-03-31T10:28:08.442Z",
+      "id": "1oNnbibaQqccDnKn",
+      "name": "YouTube"
+    },
+    {
+      "updatedAt": "2026-03-31T10:28:08.541Z",
+      "createdAt": "2026-03-31T10:28:08.541Z",
+      "id": "M21MYUjs8ZOKF3jZ",
+      "name": "AI Automation"
+    },
+    {
+      "updatedAt": "2026-03-31T10:28:08.411Z",
+      "createdAt": "2026-03-31T10:28:08.411Z",
+      "id": "byl4aCFT0pCDaFkd",
+      "name": "Groq"
+    },
+    {
+      "updatedAt": "2026-03-31T10:28:08.380Z",
+      "createdAt": "2026-03-31T10:28:08.380Z",
+      "id": "jXJMzOLmwwxjN9Pa",
+      "name": "Kling AI"
+    },
+    {
+      "updatedAt": "2026-03-31T10:28:08.510Z",
+      "createdAt": "2026-03-31T10:28:08.510Z",
+      "id": "nU45sxFOcPBI6f4D",
+      "name": "HuggingFace"
+    },
+    {
+      "updatedAt": "2026-03-31T10:28:08.475Z",
+      "createdAt": "2026-03-31T10:28:08.475Z",
+      "id": "xvg5dsKEVCBbMHnR",
+      "name": "Fal.ai"
+    }
+  ]
+}
